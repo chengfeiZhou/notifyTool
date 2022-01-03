@@ -20,7 +20,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("cannot create zap logger: %v", err)
 	}
-	msgChan := make(chan *service.Msg, 10)
-	sh := service.CreateServerHandler(lg, msgChan)
+	sh := &service.ServerHandler{
+		Logger: lg,
+		WsSrv:  nil,
+	}
 	panic(http.ListenAndServe(*addr, sh))
 }
