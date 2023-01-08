@@ -164,9 +164,11 @@ func (sh *ServerHandler) sendMsgToChannel(channel string, message []byte) {
 		if !hub.chans.Has(channel) {
 			continue
 		}
+		var content interface{}
+		_ = json.Unmarshal(message, &content)
 		resp := &Response{
 			Channel: channel,
-			Content: message,
+			Content: content,
 		}
 		go sh.sendMsg(hub, resp)
 	}
@@ -181,5 +183,5 @@ func (sh *ServerHandler) sendMsg(wh *wsHub, msg *Response) {
 	}
 
 	sh.logger.Info("[ws]send notify", logger.MakeField("remote", wh.ws.RemoteAddr().String()),
-		logger.MakeField("channel", msg.Channel))
+		logger.MakeField("channel", msg.Channel), logger.MakeField("data", msg))
 }
