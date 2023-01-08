@@ -13,7 +13,7 @@
 </head>
 <body>
     <script type='application/javascript'>
-        var websocket = 'ws://localhost:8900/hello';
+        var websocket = 'ws://localhost:8900/hello|world';
         if (window.WebSocket) {
             ws = new WebSocket(websocket);
         }else if (window.MozWebSocket) {
@@ -27,7 +27,13 @@
         ws.onmessage = function (evt) {
             console.log("msg: ",evt);
             tr = document.getElementById("content");
-            d = new Date()
+            d = new Date();
+            data = JSON.parse(evt.data);
+            console.log(data);
+            chan = data.channel;
+            console.log(chan);
+            value = data.content
+            console.log(value);
             content = d.toLocaleString() + "\r\norigin:" + evt.origin + "\r\nmsg:" + evt.data + "\r\n"
             tr.value += content
         };
