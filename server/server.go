@@ -51,6 +51,12 @@ type ServerHandler struct {
 
 type OptionFunc func(*ServerHandler)
 
+func WithLogger(lg logger.Logger) OptionFunc {
+	return func(sh *ServerHandler) {
+		sh.logger = lg
+	}
+}
+
 func NewServerHandler(ctx context.Context, ops ...OptionFunc) *ServerHandler {
 	upgrader := &websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -102,7 +108,8 @@ func (sh *ServerHandler) WSHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, ms, err := ws.ReadMessage()
 		if err != nil {
-			sh.logger.Error(logger.ErrorEmptyData, "[ws] read message", logger.ErrorField(err))
+			sh.logger.Error(logger.ErrorEmptyData, "[ws] read message", logger.MakeField("remote", wh.ws.RemoteAddr().String()),
+				logger.ErrorField(err))
 			break
 		}
 		command := new(Command)

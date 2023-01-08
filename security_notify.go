@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -19,11 +20,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	addr := *addr
-	logs := logger.DefaultLogger()
+	logs, err := logger.NewLogger()
+	if err != nil {
+		log.Fatal("创建日志实例错误")
+	}
 	logs.Info("notify service running", logger.MakeField("addr", addr))
 	srv := &http.Server{
 		Addr:         addr,
-		Handler:      server.NewServerHandler(ctx),
+		Handler:      server.NewServerHandler(ctx, server.WithLogger(logs)),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
