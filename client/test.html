@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>notify demo</title>
+    <style>
+        textarea {
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <script type='application/javascript'>
+        var websocket = 'ws://localhost:8900/hello';
+        if (window.WebSocket) {
+            ws = new WebSocket(websocket);
+        }else if (window.MozWebSocket) {
+            ws = MozWebSocket(websocket);
+        }else {
+            console.log('WebSocket Not Supported');
+        }
+        window.onbeforeunload = function(e) {
+            ws.close();
+        };
+        ws.onmessage = function (evt) {
+            console.log("msg: ",evt);
+            tr = document.getElementById("content");
+            d = new Date()
+            content = d.toLocaleString() + "\r\norigin:" + evt.origin + "\r\nmsg:" + evt.data + "\r\n"
+            tr.value += content
+        };
+        ws.onopen = function(evt) {
+            console.log("open: ",evt);
+            tr = document.getElementById("content");
+            d = new Date()
+            content = d.toLocaleString() + "|\topend: "+ evt.currentTarget.url + "\r\n"
+            tr.value += content
+        };
+        ws.onclose = function(evt) {
+            console.log("close: ",evt);
+            tr = document.getElementById("content");
+            d = new Date()
+            content = d.toLocaleString() + "|\tclosed: "+evt.currentTarget.url+ "\r\n"
+            tr.value += content
+        };
+        ws.onerror = function(evt) {
+            console.log("error: ",evt);
+            console.log("error:", evt);
+            tr = document.getElementById("content");
+            d = new Date()
+            content = d.toLocaleString() + "|\terror: "+ evt.currentTarget.url + "\r\n"
+            tr.value += content
+        };
+    </script>
+    <div>
+        <h3>content:</h3>
+        <textarea id="content" name="content" rows="60" cols="68" readonly wrap="hard"></textarea>
+    </div>
+</body>
+</html>
